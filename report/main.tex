@@ -1,0 +1,733 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{geometry}
+\usepackage{hyperref}
+\geometry{margin=1in}
+
+\title{Data Mining 2026 --- Assignment 1\\Build the Model from Scratch}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+%==================================================================%
+\section{Introduction and Experimental Setup}
+%==================================================================%
+
+Linear Regression is one of the most fundamental supervised learning algorithms in machine learning. It aims to model the relationship between input features and a continuous target variable by fitting a linear function to the observed data. In this experiment, a Linear Regression model was implemented from scratch using Gradient Descent, without relying on high-level machine learning libraries.
+
+The experiment was conducted on four synthetic datasets: \texttt{linear\_data\_A}, \texttt{linear\_data\_B}, \texttt{linear\_data\_C}, and \texttt{linear\_data\_D}, located in the \texttt{data/linear\_data/} directory. The model was trained using Mean Squared Error (MSE) as the loss function. A fixed random seed of 42 was used throughout all experiments. The validation split ratio was set to 0.2 (80\% training, 20\% validation). Each model was trained for 500 iterations.
+
+\newpage
+%==================================================================%
+\section{Methodology}
+%==================================================================%
+
+\subsection{Loss Function --- Mean Squared Error (MSE)}
+
+\[ \text{MSE} = \frac{1}{n}\sum_{i=1}^{n}(\hat{y}_i - y_i)^2 \]
+
+\subsection{Gradient Descent Update Rule}
+
+\[ W \leftarrow W - \alpha \cdot \nabla_W \mathcal{L} \]
+
+where $\alpha$ is the learning rate and $\nabla_W \mathcal{L}$ is the gradient of the loss.
+
+\subsection{Evaluation Metrics --- Linear Regression}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Metric} & \textbf{Formula} & \textbf{Interpretation} \\
+\hline
+MSE   & $\frac{1}{n}\sum(\hat{y}-y)^2$     & Average squared error --- lower is better \\
+MAE   & $\frac{1}{n}\sum|\hat{y}-y|$        & Average absolute error --- lower is better \\
+RMSE  & $\sqrt{\text{MSE}}$                 & Error in original units --- lower is better \\
+$R^2$ & $1 - \frac{SS_{res}}{SS_{tot}}$     & Variance explained by model --- higher is better \\
+\hline
+\end{tabular}
+\caption{Evaluation metrics for linear regression.}
+\end{table}
+
+\newpage
+%==================================================================%
+\section{Q1(a) --- Loss Curve Analysis}
+%==================================================================%
+
+\subsection{Dataset A}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_A_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_A_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_A_lr_0_001.png}
+\end{minipage}
+\caption{Q1(a) Loss Curves --- Dataset A}
+\end{figure}
+
+\subsection{Dataset B}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_B_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_B_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_B_lr_0_001.png}
+\end{minipage}
+\caption{Q1(a) Loss Curves --- Dataset B}
+\end{figure}
+
+\subsection{Dataset C}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_C_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_C_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_C_lr_0_001.png}
+\end{minipage}
+\caption{Q1(a) Loss Curves --- Dataset C}
+\end{figure}
+
+\subsection{Dataset D}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_D_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_D_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/q1/loss_curve_dataset_D_lr_0_001.png}
+\end{minipage}
+\caption{Q1(a) Loss Curves --- Dataset D}
+\end{figure}
+
+\newpage
+%==================================================================%
+\section{Q1(b) --- Evaluation Results}
+%==================================================================%
+
+\subsection{Dataset A}
+\begin{table}[H]\centering
+\begin{tabular}{lcccc}\toprule
+\textbf{Learning Rate} & \textbf{MSE} & \textbf{MAE} & \textbf{RMSE} & $R^2$ \\\midrule
+$lr=0.1$   & 0.0134 & 0.1009 & 0.1156 & 0.5689 \\
+$lr=0.01$  & 0.0134 & 0.1009 & 0.1156 & 0.5690 \\
+$lr=0.001$ & 0.1800 & 0.3404 & 0.4243 & $-$4.8104 \\
+\bottomrule\end{tabular}
+\caption{Q1(b) Evaluation Metrics --- Dataset A}
+\end{table}
+
+\subsection{Dataset B}
+\begin{table}[H]\centering
+\begin{tabular}{lcccc}\toprule
+\textbf{Learning Rate} & \textbf{MSE} & \textbf{MAE} & \textbf{RMSE} & $R^2$ \\\midrule
+$lr=0.1$   & 0.2137 & 0.4038 & 0.4623 & 0.0446 \\
+$lr=0.01$  & 0.2137 & 0.4038 & 0.4623 & 0.0447 \\
+$lr=0.001$ & 0.3538 & 0.4892 & 0.5948 & $-$0.5812 \\
+\bottomrule\end{tabular}
+\caption{Q1(b) Evaluation Metrics --- Dataset B}
+\end{table}
+
+\subsection{Dataset C}
+\begin{table}[H]\centering
+\begin{tabular}{lcccc}\toprule
+\textbf{Learning Rate} & \textbf{MSE} & \textbf{MAE} & \textbf{RMSE} & $R^2$ \\\midrule
+$lr=0.1$   & 0.0132 & 0.0987 & 0.1148 & 0.9954 \\
+$lr=0.01$  & 0.0132 & 0.0987 & 0.1148 & 0.9954 \\
+$lr=0.001$ & 0.3033 & 0.4371 & 0.5507 & 0.8931 \\
+\bottomrule\end{tabular}
+\caption{Q1(b) Evaluation Metrics --- Dataset C}
+\end{table}
+
+\subsection{Dataset D}
+\begin{table}[H]\centering
+\begin{tabular}{lcccc}\toprule
+\textbf{Learning Rate} & \textbf{MSE} & \textbf{MAE} & \textbf{RMSE} & $R^2$ \\\midrule
+$lr=0.1$   & 0.0824 & 0.2467 & 0.2870 & 0.9716 \\
+$lr=0.01$  & 0.0824 & 0.2467 & 0.2870 & 0.9716 \\
+$lr=0.001$ & 0.3670 & 0.4815 & 0.6058 & 0.8735 \\
+\bottomrule\end{tabular}
+\caption{Q1(b) Evaluation Metrics --- Dataset D}
+\end{table}
+
+\newpage
+%==================================================================%
+\section{Q1(c) --- Observations}
+%==================================================================%
+
+\begin{itemize}
+    \item \textbf{lr=0.1 (Fast Convergence):} Loss drops sharply within the first 50 iterations and plateaus. Achieves the best convergence speed across all datasets.
+
+    \item \textbf{lr=0.01 (Smooth Convergence):} Gradual, stable decrease. Reaches a minimum comparable to lr=0.1 by approximately iteration 300. Identical final metrics to lr=0.1 confirming both converge within 500 iterations.
+
+    \item \textbf{lr=0.001 (Not Converged):} Still decreasing at iteration 500. Produces significantly higher MSE and lower or negative $R^2$. Dataset A yields $R^2 = -4.81$ meaning the unconverged model performs worse than predicting the mean.
+\end{itemize}
+
+\textbf{Dataset-wise:} Dataset C ($R^2=0.9954$) and Dataset D ($R^2=0.9716$) have a strong linear signal. Dataset B ($R^2=0.0446$) has high noise that a linear model cannot fully capture. Dataset A achieves moderate fit ($R^2=0.5689$).
+
+\textbf{Conclusion:} lr=0.01 is recommended --- stable convergence within 500 iterations without instability risk.
+
+\newpage
+%==================================================================%
+\section{Q2 --- Logistic Regression: Methodology}
+%==================================================================%
+
+Logistic Regression predicts binary class probabilities using the sigmoid activation:
+\[ \sigma(z) = \frac{1}{1+e^{-z}}, \quad \mathcal{L}_{BCE} = -\frac{1}{n}\sum\left[y_i\log\hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\right] \]
+
+The same four datasets (A, B, C, D) from \texttt{data/logistic\_data/} were used for binary classification. Fixed seed=42, val\_ratio=0.2.
+
+\begin{table}[H]\centering
+\begin{tabular}{|l|l|}\hline
+\textbf{Metric} & \textbf{Formula} \\\hline
+Accuracy  & $(TP+TN)/(TP+TN+FP+FN)$ \\
+Precision & $TP/(TP+FP)$ \\
+Recall    & $TP/(TP+FN)$ \\
+F1-score  & $2 \times \frac{P \times R}{P+R}$ \\
+\hline\end{tabular}
+\caption{Evaluation metrics for binary classification.}
+\end{table}
+
+\newpage
+%==================================================================%
+\section{Q2(a) --- Loss Curves: Effect of Learning Rate}
+%==================================================================%
+
+\subsection{Dataset A}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_A_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_A_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_A_lr_0_001.png}
+\end{minipage}
+\caption{Q2(a) Loss Curves --- Dataset A}\end{figure}
+
+\subsection{Dataset B}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_B_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_B_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_B_lr_0_001.png}
+\end{minipage}
+\caption{Q2(a) Loss Curves --- Dataset B}\end{figure}
+
+\subsection{Dataset C}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_C_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_C_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_C_lr_0_001.png}
+\end{minipage}
+\caption{Q2(a) Loss Curves --- Dataset C}\end{figure}
+
+\subsection{Dataset D}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_D_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_D_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/Q2_a/Q2a_Dataset_D_lr_0_001.png}
+\end{minipage}
+\caption{Q2(a) Loss Curves --- Dataset D}\end{figure}
+
+\newpage
+%==================================================================%
+\section{Q2(b) --- Evaluation Results: Effect of Learning Rate}
+%==================================================================%
+
+\subsection{Confusion Matrix Figures}
+
+\subsubsection{Dataset A}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_A_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_A_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_A_lr_0_001.png}
+\end{minipage}
+\caption{Q2(b) Confusion Matrices --- Dataset A}\end{figure}
+
+\subsubsection{Dataset B}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_B_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_B_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_B_lr_0_001.png}
+\end{minipage}
+\caption{Q2(b) Confusion Matrices --- Dataset B}\end{figure}
+
+\subsubsection{Dataset C}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_C_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_C_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_C_lr_0_001.png}
+\end{minipage}
+\caption{Q2(b) Confusion Matrices --- Dataset C}\end{figure}
+
+\subsubsection{Dataset D}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.1$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_D_lr_0_1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.01$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_D_lr_0_01.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $lr=0.001$\\
+    \includegraphics[width=\textwidth]{figures/Q2_b/Q2b_Dataset_D_lr_0_001.png}
+\end{minipage}
+\caption{Q2(b) Confusion Matrices --- Dataset D}\end{figure}
+
+\subsection{Classification Metrics}
+\begin{table}[H]\centering
+\begin{tabular}{llcccc}\toprule
+\textbf{Dataset} & \textbf{lr} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\\midrule
+\multirow{3}{*}{A} & 0.1   & 0.9050 & 0.9087 & 0.9171 & 0.9128 \\
+                   & 0.01  & 0.8450 & 0.8243 & 0.9078 & 0.8640 \\
+                   & 0.001 & 0.5375 & 0.5611 & 0.6774 & 0.6138 \\\midrule
+\multirow{3}{*}{B} & 0.1   & 0.7775 & 0.7808 & 0.8066 & 0.7935 \\
+                   & 0.01  & 0.7575 & 0.7426 & 0.8302 & 0.7840 \\
+                   & 0.001 & 0.5125 & 0.5326 & 0.6557 & 0.5877 \\\midrule
+\multirow{3}{*}{C} & 0.1   & 0.9762 & 0.9841 & 0.9730 & 0.9785 \\
+                   & 0.01  & 0.9544 & 0.9533 & 0.9651 & 0.9592 \\
+                   & 0.001 & 0.8706 & 0.8523 & 0.9280 & 0.8885 \\\midrule
+\multirow{3}{*}{D} & 0.1   & 0.9250 & 0.9342 & 0.9300 & 0.9321 \\
+                   & 0.01  & 0.9144 & 0.9156 & 0.9312 & 0.9233 \\
+                   & 0.001 & 0.8581 & 0.8400 & 0.9187 & 0.8776 \\
+\bottomrule\end{tabular}
+\caption{Q2(b) Classification Metrics --- all datasets and learning rates.}
+\end{table}
+
+\newpage
+%==================================================================%
+\section{Q2(c) --- Observations on Q2(a) and Q2(b)}
+%==================================================================%
+
+\begin{itemize}
+    \item \textbf{lr=0.1}: Fastest convergence, loss drops sharply within 50--100 iterations. Best classification performance across all datasets (e.g., Dataset A: Acc=0.905, F1=0.913).
+    \item \textbf{lr=0.01}: Smooth, gradual decrease. Slightly lower performance than lr=0.1 because the model needs more than 500 iterations to fully converge at this rate.
+    \item \textbf{lr=0.001}: Model has not converged at iteration 500. Accuracy drops to $\approx$0.51--0.54, barely above random chance. The confusion matrices show many misclassifications.
+\end{itemize}
+
+\textbf{Conclusion:} lr=0.1 achieves the best results within 500 iterations. lr=0.001 is completely insufficient for a 500-iteration budget.
+
+\newpage
+%==================================================================%
+\section{Q2(d) --- Loss Curves: Effect of Number of Iterations}
+%==================================================================%
+
+Fixed $lr = 0.01$, varying $n_{iteration} \in \{500, 1000, 1500\}$.
+
+\subsection{Dataset A}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $iter=500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_A_iter_500.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1000$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_A_iter_1000.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_A_iter_1500.png}
+\end{minipage}
+\caption{Q2(d) Loss Curves --- Dataset A}\end{figure}
+
+\subsection{Dataset B}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $iter=500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_B_iter_500.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1000$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_B_iter_1000.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_B_iter_1500.png}
+\end{minipage}
+\caption{Q2(d) Loss Curves --- Dataset B}\end{figure}
+
+\subsection{Dataset C}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $iter=500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_C_iter_500.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1000$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_C_iter_1000.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_C_iter_1500.png}
+\end{minipage}
+\caption{Q2(d) Loss Curves --- Dataset C}\end{figure}
+
+\subsection{Dataset D}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $iter=500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_D_iter_500.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1000$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_D_iter_1000.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_d/Q2d_Dataset_D_iter_1500.png}
+\end{minipage}
+\caption{Q2(d) Loss Curves --- Dataset D}\end{figure}
+
+\newpage
+%==================================================================%
+\section{Q2(e) --- Evaluation Results: Effect of Number of Iterations}
+%==================================================================%
+
+\subsection{Confusion Matrices}
+
+\subsubsection{Dataset A}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $iter=500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_A_iter_500.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1000$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_A_iter_1000.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_A_iter_1500.png}
+\end{minipage}
+\caption{Q2(e) Confusion Matrices --- Dataset A}\end{figure}
+
+\subsubsection{Dataset B}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $iter=500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_B_iter_500.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1000$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_B_iter_1000.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_B_iter_1500.png}
+\end{minipage}
+\caption{Q2(e) Confusion Matrices --- Dataset B}\end{figure}
+
+\subsubsection{Dataset C}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $iter=500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_C_iter_500.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1000$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_C_iter_1000.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_C_iter_1500.png}
+\end{minipage}
+\caption{Q2(e) Confusion Matrices --- Dataset C}\end{figure}
+
+\subsubsection{Dataset D}
+\begin{figure}[H]\centering
+\begin{minipage}{0.32\textwidth}\centering\small $iter=500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_D_iter_500.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1000$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_D_iter_1000.png}
+\end{minipage}\hfill
+\begin{minipage}{0.32\textwidth}\centering\small $iter=1500$\\
+    \includegraphics[width=\textwidth]{figures/Q2_e/Q2e_Dataset_D_iter_1500.png}
+\end{minipage}
+\caption{Q2(e) Confusion Matrices --- Dataset D}\end{figure}
+
+\subsection{Classification Metrics}
+\begin{table}[H]\centering
+\begin{tabular}{llcccc}\toprule
+\textbf{Dataset} & \textbf{Iterations} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\\midrule
+\multirow{3}{*}{A} & 500  & 0.8450 & 0.8243 & 0.9078 & 0.8640 \\
+                   & 1000 & 0.9050 & 0.8978 & 0.9309 & 0.9140 \\
+                   & 1500 & 0.9050 & 0.8978 & 0.9309 & 0.9140 \\\midrule
+\multirow{3}{*}{B} & 500  & 0.7575 & 0.7426 & 0.8302 & 0.7840 \\
+                   & 1000 & 0.7825 & 0.7753 & 0.8302 & 0.8018 \\
+                   & 1500 & 0.7800 & 0.7793 & 0.8160 & 0.7972 \\\midrule
+\multirow{3}{*}{C} & 500  & 0.9544 & 0.9533 & 0.9651 & 0.9592 \\
+                   & 1000 & 0.9738 & 0.9796 & 0.9730 & 0.9763 \\
+                   & 1500 & 0.9781 & 0.9863 & 0.9741 & 0.9802 \\\midrule
+\multirow{3}{*}{D} & 500  & 0.9144 & 0.9156 & 0.9312 & 0.9233 \\
+                   & 1000 & 0.9225 & 0.9310 & 0.9289 & 0.9299 \\
+                   & 1500 & 0.9231 & 0.9330 & 0.9278 & 0.9304 \\
+\bottomrule\end{tabular}
+\caption{Q2(e) Classification Metrics --- varying iterations, $lr=0.01$.}
+\end{table}
+
+\newpage
+%==================================================================%
+\section{Q2(f) --- Observations on Q2(d) and Q2(e)}
+%==================================================================%
+
+\begin{itemize}
+    \item \textbf{500 iterations}: With lr=0.01, the model has not fully converged on most datasets --- the loss curves are still decreasing.
+    \item \textbf{1000 iterations}: Significant performance improvement. Dataset A accuracy jumps from 0.845 to 0.905 (+6\%). All datasets show meaningful gains.
+    \item \textbf{1500 iterations}: Marginal further gain on some datasets (e.g., Dataset C F1: 0.9763$\to$0.9802). For most datasets, performance stabilises between 1000--1500 iterations.
+\end{itemize}
+
+\textbf{Conclusion:} With lr=0.01, 500 iterations is insufficient --- the model is still learning. 1000 iterations is recommended for near-optimal performance. Beyond 1000, gains are marginal.
+
+\newpage
+%==================================================================%
+\section{Q3(a) --- Data Preprocessing: Statistics Before Imputation}
+%==================================================================%
+
+The \texttt{NYCU\_Iris.csv} dataset contains 500 samples and 70 features. Five columns contain missing values. The table below reports the median and standard deviation computed from non-missing entries only.
+
+\begin{table}[H]\centering
+\begin{tabular}{lcccc}\toprule
+\textbf{Column} & \textbf{Missing Count} & \textbf{Non-Missing} & \textbf{Median} & \textbf{Std Dev} \\\midrule
+SepalLengthCm & 28  & 472 & 6.3000  & 1.0371 \\
+SepalWidthCm  & 57  & 443 & 2.9000  & 0.3896 \\
+PetalLengthCm & 150 & 350 & 5.0856  & 1.5828 \\
+PetalWidthCm  & 22  & 478 & 1.6000  & 0.7067 \\
+BranchLength  & 24  & 476 & 16.3000 & 1.0352 \\
+\bottomrule\end{tabular}
+\caption{Q3(a) Median and Std Dev of columns with missing values, before imputation.}
+\end{table}
+
+PetalLengthCm has the most missing values (150 out of 500 = 30\%), making it the most affected feature. BranchLength has an unusually large median (16.3) compared to the other morphological measurements.
+
+\newpage
+%==================================================================%
+\section{Q3(b) --- KNN Imputation}
+%==================================================================%
+
+\subsection{Implementation}
+
+Missing values were replaced using \texttt{sklearn.impute.KNNImputer} with $k=5$ neighbours:
+
+\begin{verbatim}
+from sklearn.impute import KNNImputer
+imputer = KNNImputer(n_neighbors=5)
+df[feature_cols] = imputer.fit_transform(df[feature_cols])
+\end{verbatim}
+
+\subsection{Before vs.\ After Comparison}
+
+\begin{table}[H]\centering
+\begin{tabular}{lcccc}\toprule
+ & \multicolumn{2}{c}{\textbf{Before Imputation}} & \multicolumn{2}{c}{\textbf{After Imputation}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+\textbf{Column} & \textbf{Median} & \textbf{Std Dev} & \textbf{Median} & \textbf{Std Dev} \\\midrule
+SepalLengthCm & 6.3000  & 1.0371 & 6.3000  & 1.0093 \\
+SepalWidthCm  & 2.9000  & 0.3896 & 2.9000  & 0.3724 \\
+PetalLengthCm & 5.0856  & 1.5828 & 5.0357  & 1.5150 \\
+PetalWidthCm  & 1.6000  & 0.7067 & 1.7000  & 0.6946 \\
+BranchLength  & 16.3000 & 1.0352 & 16.3000 & 1.0110 \\
+\bottomrule\end{tabular}
+\caption{Q3(b) Median and Std Dev before and after KNN Imputation.}
+\end{table}
+
+\subsection{Observations}
+
+Median values are nearly unchanged after imputation, confirming KNN imputation does not introduce significant bias. Standard deviations decrease slightly --- expected because imputed values are averages of neighbours and cluster near the centre of local distributions. This is far preferable to mean imputation, which would reduce variance more drastically and destroy local data structure.
+
+\newpage
+%==================================================================%
+\section{Q4(a) --- Histogram of PetalWidthCm}
+%==================================================================%
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.65\textwidth]{figures/Q4/Q4a_histogram_PetalWidthCm.png}
+\caption{Q4(a) Histogram of PetalWidthCm}
+\end{figure}
+
+The histogram reveals a \textbf{bimodal distribution}: a concentration of small values (0.1--0.6\,cm) corresponding to \textit{Iris setosa}, and a broader distribution of larger values (1.0--2.5\,cm) for \textit{Iris versicolor} and \textit{Iris virginica}. This clear separation indicates PetalWidthCm is a highly discriminative feature for species classification.
+
+\newpage
+%==================================================================%
+\section{Q4(b) --- Feature with Largest Positive Correlation with PetalWidthCm}
+%==================================================================%
+
+Pearson correlation coefficients were computed between all features (excluding \texttt{PetalWidthCm}, \texttt{Species}, \texttt{Id}) and \texttt{PetalWidthCm} using \texttt{r\_regression} from \texttt{sklearn.feature\_selection}.
+
+The feature with the \textbf{largest positive Pearson correlation} with \texttt{PetalWidthCm} is:
+
+\begin{table}[H]\centering
+\begin{tabular}{lc}\toprule
+\textbf{Feature} & \textbf{Pearson Correlation with PetalWidthCm} \\\midrule
+\textbf{PetalWidthCompactness} & \textbf{0.9917} \\
+\bottomrule\end{tabular}
+\caption{Q4(b) Feature with largest positive correlation with PetalWidthCm.}
+\end{table}
+
+\texttt{PetalWidthCompactness} has an extremely strong positive correlation ($r=0.9917$) with \texttt{PetalWidthCm}, indicating these two features encode nearly identical information about petal width morphology.
+
+\newpage
+%==================================================================%
+\section{Q4(c) --- Top 5 Features with Strongest Negative Correlations}
+%==================================================================%
+
+\begin{table}[H]\centering
+\begin{tabular}{lc}\toprule
+\textbf{Feature} & \textbf{Pearson Correlation with PetalWidthCm} \\\midrule
+SepalWidthMajorAxis   & $-0.0964$ \\
+SepalGlossIndex       & $-0.0952$ \\
+SepalWidthCompactness & $-0.0885$ \\
+SepalWidthCurvature   & $-0.0813$ \\
+SepalWidthMinorAxis   & $-0.0744$ \\
+\bottomrule\end{tabular}
+\caption{Q4(c) Top 5 features with strongest negative correlations with PetalWidthCm.}
+\end{table}
+
+All five negatively correlated features are sepal-width derived measurements. The negative correlations are weak in magnitude ($|r| < 0.10$), suggesting a slight inverse relationship between sepal width characteristics and petal width. Species with wider petals tend to have relatively narrower sepal-width derived measurements.
+
+\newpage
+%==================================================================%
+\section{Q4(d) --- Boxplots for Features from Q4(b) and Q4(c)}
+%==================================================================%
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.95\textwidth]{figures/Q4/Q4d_boxplots.png}
+\caption{Q4(d) Boxplots --- 1 feature from Q4(b) + 5 features from Q4(c)}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{PetalWidthCompactness} shows the widest spread and several high-value outliers, consistent with its high correlation with PetalWidthCm which itself has a bimodal distribution.
+    \item The five sepal-width features (\texttt{SepalWidthMajorAxis}, \texttt{SepalGlossIndex}, \texttt{SepalWidthCompactness}, \texttt{SepalWidthCurvature}, \texttt{SepalWidthMinorAxis}) all show compact distributions with small IQRs and mild outliers, indicating consistent values across species.
+\end{itemize}
+
+\newpage
+%==================================================================%
+\section{Q5(a) --- Regularization: Training Loss Curves}
+%==================================================================%
+
+L2 regularisation modifies the loss:
+\[ \mathcal{L}_{reg} = \mathcal{L}_{BCE} + \frac{\lambda}{m}\sum_{j=1}^{d}w_j^2 \]
+
+Four settings tested: No regularisation, $\lambda \in \{0.01, 1, 100\}$.
+
+\begin{figure}[H]\centering
+\begin{minipage}{0.48\textwidth}\centering
+    \includegraphics[width=\textwidth]{figures/Q5/Q5a_No_Regularization.png}
+    \caption*{No Regularisation}
+\end{minipage}\hfill
+\begin{minipage}{0.48\textwidth}\centering
+    \includegraphics[width=\textwidth]{{figures/Q5/Q5a_L2_lambda0.01}.png}
+    \caption*{L2 $\lambda=0.01$}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]\centering
+\begin{minipage}{0.48\textwidth}\centering
+    \includegraphics[width=\textwidth]{figures/Q5/Q5a_L2_lambda1.png}
+    \caption*{L2 $\lambda=1$}
+\end{minipage}\hfill
+\begin{minipage}{0.48\textwidth}\centering
+    \includegraphics[width=\textwidth]{figures/Q5/Q5a_L2_lambda100.png}
+    \caption*{L2 $\lambda=100$}
+\end{minipage}
+\caption{Q5(a) Training and Validation Loss Curves for all regularisation settings.}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{No reg \& $\lambda=0.01$}: Nearly identical loss curves --- mild regularisation has no measurable effect at this scale.
+    \item \textbf{$\lambda=1$}: Loss converges to a slightly higher value but remains stable.
+    \item \textbf{$\lambda=100$}: Loss converges to a much higher value --- severe underfitting. The penalty term dominates, driving weights to near-zero.
+\end{itemize}
+
+\newpage
+%==================================================================%
+\section{Q5(b) --- Testing Results}
+%==================================================================%
+
+\begin{figure}[H]\centering
+\begin{minipage}{0.48\textwidth}\centering
+    \includegraphics[width=\textwidth]{figures/Q5_b/Q5b_No_Regularization.png}
+    \caption*{No Regularisation}
+\end{minipage}\hfill
+\begin{minipage}{0.48\textwidth}\centering
+    \includegraphics[width=\textwidth]{{figures/Q5_b/Q5b_L2_lambda0.01}.png}
+    \caption*{L2 $\lambda=0.01$}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]\centering
+\begin{minipage}{0.48\textwidth}\centering
+    \includegraphics[width=\textwidth]{figures/Q5_b/Q5b_L2_lambda1.png}
+    \caption*{L2 $\lambda=1$}
+\end{minipage}\hfill
+\begin{minipage}{0.48\textwidth}\centering
+    \includegraphics[width=\textwidth]{figures/Q5_b/Q5b_L2_lambda100.png}
+    \caption*{L2 $\lambda=100$}
+\end{minipage}
+\caption{Q5(b) Confusion Matrices on Test Set.}
+\end{figure}
+
+\begin{table}[H]\centering
+\begin{tabular}{lcccc}\toprule
+\textbf{Setting} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\\midrule
+No Regularisation & 0.6500 & 0.6316 & 0.7200 & 0.6729 \\
+L2 $\lambda=0.01$ & 0.6500 & 0.6316 & 0.7200 & 0.6729 \\
+L2 $\lambda=1$    & 0.6500 & 0.6316 & 0.7200 & 0.6729 \\
+L2 $\lambda=100$  & 0.5000 & 0.5000 & 1.0000 & 0.6667 \\
+\bottomrule\end{tabular}
+\caption{Q5(b) Test set metrics for all regularisation settings.}
+\end{table}
+
+\newpage
+%==================================================================%
+\section{Q5(c) --- Observations on Q5(a) and Q5(b)}
+%==================================================================%
+
+\begin{itemize}
+    \item \textbf{No Regularisation \& $\lambda=0.01$ \& $\lambda=1$}: All three settings produce identical test results (Accuracy=0.65, F1=0.6729). The model is not significantly overfitting at this scale, so mild-to-moderate regularisation provides no additional benefit.
+
+    \item \textbf{$\lambda=100$ (Model Collapse)}: Performance degrades sharply. Accuracy drops to 0.50, Recall=1.0 but Precision=0.50 --- the model predicts the positive class for \textit{every} sample. This is textbook over-regularisation: the penalty is so large it drives all weights to near-zero, destroying the model's ability to discriminate between classes.
+\end{itemize}
+
+\textbf{Bias-Variance Trade-off:}
+\begin{itemize}
+    \item Low $\lambda$: Low bias, moderate variance --- model fits training data well.
+    \item High $\lambda=100$: Very high bias, near-zero variance --- model cannot learn any pattern.
+\end{itemize}
+
+\textbf{Conclusion:} For this dataset (70 features, 500 samples), regularisation does not improve performance until $\lambda$ becomes excessively large and causes collapse. The optimal range is $\lambda \leq 1$. $\lambda=100$ must be avoided as it induces complete model failure.
+
+\end{document}
